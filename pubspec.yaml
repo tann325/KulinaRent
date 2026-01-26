@@ -1,0 +1,42 @@
+name: kulinarent_2026
+description: "Aplikasi peminjaman alat memasak - KulinaRent"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Supabase
+  supabase_flutter: ^2.5.6
+
+  # Optional (recommended for UI ke depannya)
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # ===== ASSETS =====
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # ===== FONTS (optional, ready if needed) =====
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700

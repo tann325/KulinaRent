@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart';
+import 'admin/screens/splash_screen.dart';
+import 'services/supabase_service.dart';
+import 'admin/screens/alat1.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SupabaseService.init();
   runApp(const KulinaRentApp());
 }
 

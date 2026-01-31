@@ -65,7 +65,7 @@ class _AlatScreenState extends State<AlatScreen> {
               ),
             ),
 
-            
+             
             const SizedBox(height: 20),
 
             // Grid Alat

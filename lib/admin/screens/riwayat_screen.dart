@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kulinarent_2026/admin/screens/logout_page.dart';
 import 'package:kulinarent_2026/admin/screens/dashboard.dart';
 import 'package:kulinarent_2026/admin/screens/pengguna_screen.dart';
 import 'package:kulinarent_2026/admin/screens/alat1.dart';
+import 'package:kulinarent_2026/admin/screens/aktivitas1.dart';
 
 class RiwayatScreen extends StatefulWidget {
   const RiwayatScreen({super.key});
@@ -12,7 +12,7 @@ class RiwayatScreen extends StatefulWidget {
 }
 
 class _RiwayatScreenState extends State<RiwayatScreen> {
-  String filterAktif = 'Peminjaman'; 
+  String filterAktif = 'Peminjaman';
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // HEADER
+              // ================= HEADER =================
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(25),
@@ -56,15 +56,15 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
 
               const SizedBox(height: 15),
 
-              // SEARCH BAR
+              // ================= SEARCH =================
               TextField(
                 decoration: InputDecoration(
                   hintText: 'Cari Riwayat',
                   hintStyle: const TextStyle(color: Color(0xFFE7A9BD)),
                   fillColor: Colors.white,
                   filled: true,
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFFE7A9BD)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  prefixIcon:
+                      const Icon(Icons.search, color: Color(0xFFE7A9BD)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -74,7 +74,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
 
               const SizedBox(height: 15),
 
-              // FILTER BUTTONS
+              // ================= FILTER =================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -86,95 +86,105 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
 
               const SizedBox(height: 20),
 
-              // DAFTAR RIWAYAT
+              // ================= LIST =================
               Expanded(
-                child: ListView(
-                  children: _getFilteredList(),
-                ),
+                child: ListView(children: _getFilteredList()),
               ),
             ],
           ),
         ),
       ),
 
-      // BOTTOM NAVBAR - SUDAH AKTIF
+      // ================= BOTTOM NAV (FINAL & SAMA) =================
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 3, // RIWAYAT
+        selectedItemColor: Colors.pink,
+        unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        currentIndex: 2, // Highlight Riwayat
-        selectedItemColor: const Color(0xFF7B1530),
-        unselectedItemColor: Colors.black54,
-        iconSize: 26,
         onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AlatScreen()));
-          } else if (index == 1) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PenggunaScreen()));
-          } else if (index == 2 || index == 3) {
-            // Sudah di halaman ini (Riwayat/Aktivitas)
-          } else if (index == 4) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ProfilScreen()));
+          if (index == 3) return;
+
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => const AlatScreen()));
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PenggunaScreen()));
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DashboardScreen()));
+              break;
+            case 4:
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AktifitasScreen()));
+              break;
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.soup_kitchen), label: 'Alat'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Pengguna'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Aktifitas'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.soup_kitchen_outlined), label: 'Alat'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people_outline), label: 'Pengguna'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home), label: 'Beranda'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.history), label: 'Riwayat'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.assignment_outlined), label: 'Aktifitas'),
         ],
       ),
     );
   }
 
-  // Logika Filter List
+  // ================= FILTER LOGIC =================
   List<Widget> _getFilteredList() {
     if (filterAktif == 'Peminjaman') {
       return [
-        _buildRiwayatCard('Salsadila Ariza', 'Peminjaman', '20 Jan 2026'),
-        _buildRiwayatCard('Richo Ferdinan', 'Peminjaman', '19 Jan 2026'),
+        _riwayatCard('Salsadila Ariza', 'Peminjaman', '20 Jan 2026'),
+        _riwayatCard('Richo Ferdinan', 'Peminjaman', '19 Jan 2026'),
       ];
     } else if (filterAktif == 'Pengembalian') {
       return [
-        _buildRiwayatCard('Azzura Selly', 'Pengembalian', '18 Jan 2026'),
-        _buildRiwayatCard('Wafi Nazar', 'Pengembalian', '17 Jan 2026'),
+        _riwayatCard('Azzura Selly', 'Pengembalian', '18 Jan 2026'),
+        _riwayatCard('Wafi Nazar', 'Pengembalian', '17 Jan 2026'),
       ];
     } else {
       return [
-        _buildRiwayatCard('Salsadila Ariza', 'Peminjaman', '20 Jan 2026'),
-        _buildRiwayatCard('Richo Ferdinan', 'Peminjaman', '19 Jan 2026'),
-        _buildRiwayatCard('Azzura Selly', 'Pengembalian', '18 Jan 2026'),
-        _buildRiwayatCard('Wafi Nazar', 'Pengembalian', '17 Jan 2026'),
+        _riwayatCard('Salsadila Ariza', 'Peminjaman', '20 Jan 2026'),
+        _riwayatCard('Richo Ferdinan', 'Peminjaman', '19 Jan 2026'),
+        _riwayatCard('Azzura Selly', 'Pengembalian', '18 Jan 2026'),
+        _riwayatCard('Wafi Nazar', 'Pengembalian', '17 Jan 2026'),
       ];
     }
   }
 
   Widget _buildFilterButton(String label) {
-    bool isActive = filterAktif == label;
+    bool active = filterAktif == label;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          filterAktif = label;
-        });
-      },
+      onTap: () => setState(() => filterAktif = label),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFE91E63) : const Color(0xFFE7A9BD).withOpacity(0.5),
+          color:
+              active ? const Color(0xFFE91E63) : const Color(0xFFE7A9BD),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-        ),
+        child: Text(label,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold)),
       ),
     );
   }
 
-  Widget _buildRiwayatCard(String nama, String tipe, String tanggal) {
+  Widget _riwayatCard(String nama, String tipe, String tanggal) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -185,33 +195,26 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                nama,
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(nama,
                 style: const TextStyle(
-                  color: Color(0xFFE91E63),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                    color: Color(0xFFE91E63),
+                    fontWeight: FontWeight.bold)),
+            Text(tanggal,
+                style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            const SizedBox(height: 6),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7B1530),
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(height: 4),
-              Text(tanggal, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF7B1530),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  tipe,
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                ),
-              ),
-            ],
-          ),
+              child: Text(tipe,
+                  style:
+                      const TextStyle(color: Colors.white, fontSize: 10)),
+            ),
+          ]),
           const Icon(Icons.chevron_right, color: Colors.grey),
         ],
       ),

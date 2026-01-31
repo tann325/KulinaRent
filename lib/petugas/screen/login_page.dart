@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kulinarent_2026/admin/screens/dashboard.dart';
+import 'package:kulinarent_2026/admin/screens/profil_screen.dart';
 import 'dashboard.dart';
+import 'profil_screen.dart'; // ganti kalau kamu punya halaman user lain
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -14,7 +17,7 @@ class LoginScreen extends StatelessWidget {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    // VALIDASI INPUT KOSONG
+    // VALIDASI KOSONG
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -25,20 +28,18 @@ class LoginScreen extends StatelessWidget {
       return;
     }
 
-    // LOGIN KHUSUS ADMIN
-    if (email == 'admin@gmail.com' && password == 'admin') {
+    // LOGIN ADMIN
+    if (email == 'petugas@gmail.com' && password == 'petugas') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
       );
-    } 
-    // SELAIN ADMIN DITOLAK
+    }
+    // LOGIN USER BIASA
     else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Akun ini bukan admin'),
-          backgroundColor: Colors.red,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ProfilScreen()),
       );
     }
   }
@@ -94,7 +95,7 @@ class LoginScreen extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      // BUTTON LOGIN
+                      // TOMBOL LOGIN
                       SizedBox(
                         width: double.infinity,
                         height: 42,

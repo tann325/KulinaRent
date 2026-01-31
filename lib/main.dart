@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kulinarent_2026/admin/screens/login_page.dart';
 import 'admin/screens/splash_screen.dart';
 import 'services/supabase_service.dart';
 import 'admin/screens/alat1.dart';
@@ -27,3 +28,4 @@ class KulinaRentApp extends StatelessWidget {
     );
   }
 }
+

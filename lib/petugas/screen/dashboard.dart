@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'dashboard.dart';
+import '../admin/screens/admin_dashboard.dart';
+import '../petugas/screens/petugas_dashboard.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   // CONTROLLER
-  static final TextEditingController emailController =
-      TextEditingController();
-  static final TextEditingController passwordController =
-      TextEditingController();
+  static final TextEditingController emailController = TextEditingController();
+  static final TextEditingController passwordController = TextEditingController();
 
   void handleLogin(BuildContext context) {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    // VALIDASI INPUT KOSONG
+    // VALIDASI KOSONG
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -25,18 +24,31 @@ class LoginScreen extends StatelessWidget {
       return;
     }
 
-    // LOGIN KHUSUS ADMIN
-    if (email == 'admin@gmail.com' && password == 'admin') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
-      );
-    } 
-    // SELAIN ADMIN DITOLAK
-    else {
+    // Dummy akun dengan role
+    Map<String, Map<String, String>> dummyUsers = {
+      'admin@gmail.com': {'password': 'admin123', 'role': 'admin'},
+      'petugas@gmail.com': {'password': 'petugas', 'role': 'petugas'},
+    };
+
+    if (dummyUsers.containsKey(email) && dummyUsers[email]!['password'] == password) {
+      final role = dummyUsers[email]!['role'];
+
+      if (role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+        );
+      } else if (role == 'petugas') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PetugasDashboard()),
+        );
+      }
+    } else {
+      // Login gagal
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Akun ini bukan admin'),
+          content: Text('Email atau password salah'),
           backgroundColor: Colors.red,
         ),
       );
@@ -94,7 +106,7 @@ class LoginScreen extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      // BUTTON LOGIN
+                      // TOMBOL LOGIN
                       SizedBox(
                         width: double.infinity,
                         height: 42,

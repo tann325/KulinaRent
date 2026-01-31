@@ -109,8 +109,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
                 },
               ),
             ),
-
-            _buildBottomNav(),
           ],
         ),
       ),
@@ -145,23 +143,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      color: const Color(0xFFF1D3D6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _navItem(Icons.soup_kitchen, "Alat", isActive: true),
-          _navItem(Icons.people_outline, "Pengguna"),
-          _navItem(Icons.history, "Riwayat"),
-          _navItem(Icons.assignment_outlined, "Aktifitas"),
-          _navItem(Icons.person_outline, "Profil"),
         ],
       ),
     );

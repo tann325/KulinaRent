@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/admin/screens/login_page.dart';
-import 'dashboard.dart' hide LoginScreen;
+import 'petugas_dashboard.dart' 
+
+hide LoginScreen;
 
 class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});

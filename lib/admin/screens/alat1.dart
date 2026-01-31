@@ -6,7 +6,6 @@ import 'package:kulinarent_2026/admin/screens/dashboard.dart';
 import 'package:kulinarent_2026/admin/screens/aktivitas1.dart'; 
 import 'package:kulinarent_2026/admin/screens/pengguna_screen.dart';
 
-
 class AlatScreen extends StatefulWidget {
   const AlatScreen({super.key});
 
@@ -33,6 +32,12 @@ class _AlatScreenState extends State<AlatScreen> {
     alatFiltered = daftarAlat;
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void _filterAlat(String query) {
     setState(() {
       if (query.isEmpty) {
@@ -49,7 +54,6 @@ class _AlatScreenState extends State<AlatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1D3D6),
-      // Menghilangkan AppBar bawaan agar tidak ada tombol back otomatis
       body: SafeArea(
         child: Column(
           children: [
@@ -57,47 +61,42 @@ class _AlatScreenState extends State<AlatScreen> {
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: _buildSearchBar(),
+              child: _buildSearchAndFilter(),
             ),
-            
             const SizedBox(height: 15),
-
-            // Tombol Tambah (+) dan Dropdown Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
-               mainAxisAlignment: MainAxisAlignment.start, // <<< PINDAH KE KIRI
-               children: [
-               _buildAddButton(),
-                const SizedBox(width: 12),
-               _buildDropdownKategori(),
-                  ],
-                ),
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildAddButton(),
+                  const SizedBox(width: 12),
+                  _buildDropdownKategori(),
+                ],
               ),
             ),
-
-            
             const SizedBox(height: 20),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: alatFiltered.isEmpty 
-                  ? const Center(child: Text("Alat tidak ditemukan", style: TextStyle(color: Colors.pink)))
-                  : GridView.builder(
-                      itemCount: alatFiltered.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                        childAspectRatio: 0.72,
+                    ? const Center(
+                        child: Text("Alat tidak ditemukan", style: TextStyle(color: Colors.pink)))
+                    : GridView.builder(
+                        itemCount: alatFiltered.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
+                          childAspectRatio: 0.72,
+                        ),
+                        itemBuilder: (context, index) {
+                          return _AlatCard(
+                            title: alatFiltered[index]['nama']!,
+                            subtitle: alatFiltered[index]['spek']!,
+                          );
+                        },
                       ),
-                      itemBuilder: (context, index) {
-                        return _AlatCard(
-                          title: alatFiltered[index]['nama']!,
-                          subtitle: alatFiltered[index]['spek']!,
-                        );
-                      },
-                    ),
               ),
             ),
           ],
@@ -186,6 +185,40 @@ class _AlatScreenState extends State<AlatScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TambahAlatScreen())),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE7A9BD),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildDropdownKategori() {
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KategoriScreen())),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE7A9BD),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.keyboard_arrow_down, color: Colors.white),
+            SizedBox(width: 5),
+            Text("Kategori", style: TextStyle(color: Colors.white)),
+          ],
+        ),
+      ),
     );
   }
 

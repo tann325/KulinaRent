@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/admin/screens/dashboard.dart';
 import 'package:kulinarent_2026/admin/screens/profil_screen.dart';
-import 'dashboard.dart';
+import 'petugas_dashboard.dart';
 import 'profil_screen.dart'; // ganti kalau kamu punya halaman user lain
 
 class LoginScreen extends StatelessWidget {

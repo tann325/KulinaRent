@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
 
 class DetailAktifitasScreen extends StatelessWidget {
-  const DetailAktifitasScreen({super.key});
+  final String judul;
+  final String petugas;
+  final String peminjam;
+
+  const DetailAktifitasScreen({
+    super.key,
+    required this.judul,
+    required this.petugas,
+    required this.peminjam,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2C6CC), // Background Pink Lembut
+      backgroundColor: const Color(0xFFF2C6CC),
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER (Sama dengan AktifitasScreen tapi ganti subtitle)
+            // ================= HEADER =================
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(25),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
               decoration: const BoxDecoration(
                 color: Color(0xFFE7A9BD),
                 borderRadius: BorderRadius.only(
@@ -26,24 +35,42 @@ class DetailAktifitasScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
+                      // BACK
                       IconButton(
                         onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
-                      const SizedBox(width: 8),
+
+                      const SizedBox(width: 10),
+
                       const Text(
                         'KulinaRent',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
+
+                  const SizedBox(height: 4),
+
                   const Padding(
-                    padding: EdgeInsets.only(left: 30),
+                    padding: EdgeInsets.only(left: 34),
                     child: Text(
                       'Detail Aktifitas',
-                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -52,7 +79,7 @@ class DetailAktifitasScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // CARD DETAIL (Putih Tengah)
+            // ================= CARD DETAIL =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -72,58 +99,93 @@ class DetailAktifitasScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Row untuk Kode & Tanggal
+                    // Kode & Tanggal
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Kr 2331', style: TextStyle(color: Color(0xFFE7A9BD), fontSize: 13)),
-                        Text('27-Januari-2026', style: TextStyle(color: Color(0xFFE7A9BD), fontSize: 13)),
+                        Text(
+                          'KR-2331',
+                          style: TextStyle(
+                            color: Color(0xFFE7A9BD),
+                            fontSize: 13,
+                          ),
+                        ),
+                        Text(
+                          '27 Januari 2026',
+                          style: TextStyle(
+                            color: Color(0xFFE7A9BD),
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    
-                    // Nama Peminjam
-                    const Text(
-                      'Rijaa',
-                      style: TextStyle(color: Color(0xFFE91E63), fontWeight: FontWeight.bold, fontSize: 20),
+
+                    const SizedBox(height: 12),
+
+                    // Nama Peminjam (DINAMIS)
+                    Text(
+                      peminjam,
+                      style: const TextStyle(
+                        color: Color(0xFFE91E63),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
-                    
-                    // Kelas/Detail
-                    const Text(
-                      'X DKV 1',
-                      style: TextStyle(color: Color(0xFFE7A9BD), fontSize: 14),
+
+                    const SizedBox(height: 4),
+
+                    // Judul Aktivitas
+                    Text(
+                      judul,
+                      style: const TextStyle(
+                        color: Color(0xFFE7A9BD),
+                        fontSize: 14,
+                      ),
                     ),
-                    
+
                     const SizedBox(height: 15),
 
-                    // Badge Disetujui Oleh
+                    // Badge Petugas
                     Align(
                       alignment: Alignment.centerRight,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF7B1530), // Warna Merah Marun
+                          color: const Color(0xFF7B1530),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'Disetujui Oleh : Intan',
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                        child: Text(
+                          'Disetujui oleh : $petugas',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 15),
 
-                    // Item yang dipinjam
+                    // Item
                     const Text(
                       'Oven 1, Mangkuk 1',
-                      style: TextStyle(color: Color(0xFFE7A9BD), fontSize: 14),
+                      style: TextStyle(
+                        color: Color(0xFFE7A9BD),
+                        fontSize: 14,
+                      ),
                     ),
-                    
-                    // Tanggal Pengembalian
+
+                    // Pengembalian
                     const Text(
-                      'Pengembalian : 28-Januari-2026',
-                      style: TextStyle(color: Color(0xFFE7A9BD), fontSize: 14),
+                      'Pengembalian : 28 Januari 2026',
+                      style: TextStyle(
+                        color: Color(0xFFE7A9BD),
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -131,22 +193,6 @@ class DetailAktifitasScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-
-      // BOTTOM NAVBAR (Sama dengan AktifitasScreen agar konsisten)
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 3,
-        selectedItemColor: Colors.black87,
-        unselectedItemColor: Colors.black54,
-        backgroundColor: Colors.white, // Menambah BG putih agar icon terlihat jelas
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.soup_kitchen), label: 'Alat'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Pengguna'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Aktifitas'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
       ),
     );
   }

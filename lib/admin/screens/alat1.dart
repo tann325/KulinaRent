@@ -268,7 +268,7 @@ class _AlatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7D9DD),
+        color: const Color.fromARGB(255, 255, 252, 253),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(

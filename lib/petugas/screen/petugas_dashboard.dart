@@ -1,148 +1,247 @@
 import 'package:flutter/material.dart';
-import '../../admin/screens/admin_dashboard.dart';
-import '../screens/petugas_dashboard.dart';
+import 'package:kulinarent_2026/admin/screens/login_page.dart';
+import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
+import 'pengajuan_peminjaman_screen.dart';
+import 'penggembalian_screen.dart';
+import 'laporan_screen.dart';
+// Ganti 'login_screen.dart' dengan nama file login kamu yang sebenarnya
+import 'login_screen.dart'; 
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class DashboardPetugas extends StatefulWidget {
+  const DashboardPetugas({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<DashboardPetugas> createState() => _DashboardPetugasState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+class _DashboardPetugasState extends State<DashboardPetugas> {
+  int _selectedIndex = 0;
+  
+  // Warna Pink Soft untuk menggantikan Grey agar lebih estetik
+  final Color softPink = const Color(0xFFD18DA0);
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  void handleLogin(BuildContext context) {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email dan password wajib diisi'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    Map<String, Map<String, String>> dummyUsers = {
-      'admin@gmail.com': {'password': 'admin123', 'role': 'admin'},
-      'petugas@gmail.com': {'password': 'petugas', 'role': 'petugas'},
-    };
-
-    if (dummyUsers.containsKey(email) && dummyUsers[email]!['password'] == password) {
-      final role = dummyUsers[email]!['role'];
-
-      if (role == 'admin') { 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const admin_dashboard()),
+  // FUNGSI LOGOUT DIALOG DENGAN NAVIGASI KE LOGIN SCREEN
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header Label "Keluar aplikasi"
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5D1D1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Keluar aplikasi',
+                    style: TextStyle(
+                      color: Color(0xFFD81B60),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Teks Peringatan
+                const Text(
+                  'Anda akan keluar dari aplikasi ini, jika mau masuk maka perlu akses login kembali!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+                const SizedBox(height: 25),
+                // Tombol Logout Merah
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // NAVIGASI BALIK KE LOGIN SCREEN
+                      // Menggunakan pushAndRemoveUntil agar user tidak bisa tekan 'back' kembali ke dashboard
+                      Navigator.pushAndRemoveUntil(
+                        context, 
+                        MaterialPageRoute(builder: (_) => const LoginScreen()), 
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B6B),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
-      } else if (role == 'petugas') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const PetugasDashboard()),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email atau password salah'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5D1D1),
       body: SafeArea(
-        child: SingleChildScrollView(
-          reverse: true,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Center(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2C6CC),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/images/logo_kulinarent.png', width: 140),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        _inputField(controller: emailController, hint: 'Email', obscureText: false),
-                        const SizedBox(height: 12),
-                        _inputField(controller: passwordController, hint: 'Password', obscureText: true),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 42,
-                          child: ElevatedButton(
-                            onPressed: () => handleLogin(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF7B1530),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        child: Column(
+          children: [
+            _buildHeader(context),
+            const SizedBox(height: 20),
+            _buildMainContent(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavigation(context),
+    );
+  }
+
+  // HEADER DENGAN TOMBOL PROFIL
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        color: Color(0xFFE4A5B8),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('KulinaRent', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text('Dashboard Petugas', style: TextStyle(color: Colors.white70)),
+            ],
           ),
+          // Klik icon profil untuk Logout
+          GestureDetector(
+            onTap: () => _showLogoutDialog(context),
+            child: const CircleAvatar(
+              backgroundColor: Colors.white24, 
+              child: Icon(Icons.person, color: Colors.white)
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  // ISI UTAMA DASHBOARD
+  Widget _buildMainContent() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ListView(
+          children: [
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15,
+              childAspectRatio: 1.2,
+              children: const [
+                _StatCard('Pengguna Aktif', '7'),
+                _StatCard('Jumlah Alat', '10'),
+                _StatCard('Alat Tersedia', '7'),
+                _StatCard('Alat Dipinjam', '3'),
+              ],
+            ),
+            const SizedBox(height: 25),
+            const Text('Riwayat Peminjaman:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+            const SizedBox(height: 10),
+            _riwayatItem('Peminjaman 02', '10.34 20 Januari 2026'),
+            _riwayatItem('Peminjaman 01', '08.20 15 Januari 2026'),
+          ],
         ),
       ),
     );
   }
 
-  Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-    required bool obscureText,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      style: const TextStyle(color: Color(0xFF7B1530), fontWeight: FontWeight.bold),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.pinkAccent),
-        filled: true,
-        fillColor: const Color(0xFFE7A9BD),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+  // NAVIGASI BAWAH
+  Widget _buildBottomNavigation(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: const Color(0xFF7B1530),
+      unselectedItemColor: softPink,
+      onTap: (index) {
+        if (index == 1) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const PengajuanPeminjamanScreen()));
+        } else if (index == 2) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const PengembalianScreen()));
+        } else if (index == 3) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const LaporanScreen()));
+        } else {
+          setState(() => _selectedIndex = index);
+        }
+      },
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+        BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Peminjaman'),
+        BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Pengembalian'),
+        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Laporan'),
+      ],
+    );
+  }
+
+  // ITEM RIWAYAT
+  Widget _riwayatItem(String title, String subtitle) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, color: Colors.green),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.pink)),
+              Text(subtitle, style: TextStyle(fontSize: 11, color: softPink)),
+            ],
+          ),
+        ],
       ),
-      textAlign: TextAlign.center,
     );
   }
 }
 
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  const _StatCard(this.title, this.value);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.pink, fontWeight: FontWeight.bold, fontSize: 12)),
+          const SizedBox(height: 8),
+          Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.pink)),
+        ],
+      ),
+    );
+  }
+}

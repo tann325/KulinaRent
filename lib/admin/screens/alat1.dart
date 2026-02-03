@@ -15,12 +15,12 @@ class AlatScreen extends StatefulWidget {
 
 class _AlatScreenState extends State<AlatScreen> {
   final List<Map<String, String>> daftarAlat = [
-    {'nama': 'Oven', 'spek': 'Spesifikasi'},
-    {'nama': 'Teflon', 'spek': 'Spesifikasi'},
-    {'nama': 'Sutel', 'spek': 'Spesifikasi'},
-    {'nama': 'Gelas', 'spek': 'Spesifikasi'},
-    {'nama': 'Mangkok', 'spek': 'Spesifikasi'},
-    {'nama': 'Sendok/Garpu', 'spek': 'Spesifikasi'},
+    {'nama': 'Oven', 'spek': 'Spesifikasi', 'gambar': 'oven.png'},
+    {'nama': 'Teflon', 'spek': 'Spesifikasi', 'gambar': 'teflon.png'},
+    {'nama': 'Sutel', 'spek': 'Spesifikasi', 'gambar': 'sutel.png'},
+    {'nama': 'Gelas', 'spek': 'Spesifikasi', 'gambar': 'gelas.png'},
+    {'nama': 'Mangkok', 'spek': 'Spesifikasi', 'gambar': 'mangkok.png'},
+    {'nama': 'Sendok/Garpu', 'spek': 'Spesifikasi', 'gambar': 'sendok.png'},
   ];
 
   List<Map<String, String>> alatFiltered = [];
@@ -40,13 +40,12 @@ class _AlatScreenState extends State<AlatScreen> {
 
   void _filterAlat(String query) {
     setState(() {
-      if (query.isEmpty) {
-        alatFiltered = daftarAlat;
-      } else {
-        alatFiltered = daftarAlat
-            .where((alat) => alat['nama']!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
+      alatFiltered = query.isEmpty
+          ? daftarAlat
+          : daftarAlat
+              .where((alat) =>
+                  alat['nama']!.toLowerCase().contains(query.toLowerCase()))
+              .toList();
     });
   }
 
@@ -57,34 +56,27 @@ class _AlatScreenState extends State<AlatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(), 
+            _buildHeader(),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildSearchAndFilter(),
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _buildAddButton(),
-                  const SizedBox(width: 12),
-                  _buildDropdownKategori(),
-                ],
-              ),
             ),
             const SizedBox(height: 20),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: alatFiltered.isEmpty 
+                child: alatFiltered.isEmpty
                     ? const Center(
-                        child: Text("Alat tidak ditemukan", style: TextStyle(color: Colors.pink)))
+                        child: Text(
+                          "Alat tidak ditemukan",
+                          style: TextStyle(color: Colors.pink),
+                        ),
+                      )
                     : GridView.builder(
                         itemCount: alatFiltered.length,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 15,
                           mainAxisSpacing: 15,
@@ -122,12 +114,18 @@ class _AlatScreenState extends State<AlatScreen> {
         children: [
           Text(
             "KulinaRent",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: Colors.white),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+                color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
             "Alat",
-            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -138,7 +136,6 @@ class _AlatScreenState extends State<AlatScreen> {
     return Row(
       children: [
         Expanded(
-          flex: 3,
           child: Container(
             height: 45,
             decoration: BoxDecoration(
@@ -148,39 +145,52 @@ class _AlatScreenState extends State<AlatScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterAlat,
-              style: const TextStyle(color: Color(0xFF7B1530), fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
                 hintText: 'Cari Alat',
-                hintStyle: TextStyle(color: Color(0xFFE7A9BD)),
-                prefixIcon: Icon(Icons.search, color: Color(0xFFE7A9BD), size: 20),
+                prefixIcon: Icon(Icons.search, color: Color(0xFFE7A9BD)),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
             ),
           ),
         ),
         const SizedBox(width: 10),
         GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TambahAlatScreen())),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const TambahAlatScreen())),
           child: Container(
-            height: 45, width: 45,
-            decoration: BoxDecoration(color: const Color(0xFFE7A9BD), borderRadius: BorderRadius.circular(12)),
+            height: 45,
+            width: 45,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE7A9BD),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: const Icon(Icons.add, color: Colors.white),
           ),
         ),
         const SizedBox(width: 10),
         GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KategoriScreen())),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const KategoriScreen())),
           child: Container(
             height: 45,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: const Color(0xFFE7A9BD), borderRadius: BorderRadius.circular(12)),
-            child: const Row(
-              children: [
-                Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                SizedBox(width: 5),
-                Text("Kategori", style: TextStyle(color: Colors.white)),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE7A9BD),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Text(
+                "Kategori",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ),
@@ -188,70 +198,33 @@ class _AlatScreenState extends State<AlatScreen> {
     );
   }
 
-  Widget _buildAddButton() {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TambahAlatScreen())),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE7A9BD),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _buildDropdownKategori() {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KategoriScreen())),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE7A9BD),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.keyboard_arrow_down, color: Colors.white),
-            SizedBox(width: 5),
-            Text("Kategori", style: TextStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBottomNav() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.pink,
-      unselectedItemColor: Colors.grey,
-      backgroundColor: Colors.white,
       currentIndex: 0,
       onTap: (index) {
         if (index == 0) return;
-        switch (index) {
-          case 1:
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PenggunaScreen()));
-            break;
-          case 2:
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
-            break;
-          case 3:
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RiwayatScreen()));
-            break;
-          case 4:
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AktifitasScreen()));
-            break;
-        }
+        final pages = [
+          null,
+          const PenggunaScreen(),
+          const DashboardScreen(),
+          const RiwayatScreen(),
+          const AktifitasScreen(),
+        ];
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => pages[index]!));
       },
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.soup_kitchen_outlined), label: 'Alat'),
-        BottomNavigationBarItem(icon: Icon(Icons.people_outline), label: 'Pengguna'),
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-        BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Aktivitas'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.soup_kitchen_outlined), label: 'Alat'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.people_outline), label: 'Pengguna'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.home), label: 'Beranda'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.history), label: 'Riwayat'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_outlined), label: 'Aktivitas'),
       ],
     );
   }
@@ -268,7 +241,7 @@ class _AlatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 252, 253),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -286,20 +259,12 @@ class _AlatCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.pink),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                subtitle,
-                style: const TextStyle(color: Color(0xFFE7A9BD), fontSize: 12),
-              ),
-              const Icon(Icons.edit, size: 16, color: Colors.grey),
-            ],
-          ),
+          Text(title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.pink)),
+          Text(subtitle,
+              style:
+                  const TextStyle(color: Color(0xFFE7A9BD), fontSize: 12)),
         ],
       ),
     );

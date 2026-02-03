@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kulinarent_2026/admin/screens/login_page.dart';
+import 'package:kulinarent_2026/admin/screens/logout_screen.dart';
 import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
-import 'pengajuan_peminjaman_screen.dart';
-import 'penggembalian_screen.dart';
-import 'laporan_screen.dart';
-// Ganti 'login_screen.dart' dengan nama file login kamu yang sebenarnya
-import 'login_screen.dart'; 
+import 'package:kulinarent_2026/petugas/screen/pengajuan_peminjaman_screen.dart';
+import 'package:kulinarent_2026/petugas/screen/penggembalian_screen.dart';
 
 class DashboardPetugas extends StatefulWidget {
   const DashboardPetugas({super.key});
@@ -16,82 +13,7 @@ class DashboardPetugas extends StatefulWidget {
 
 class _DashboardPetugasState extends State<DashboardPetugas> {
   int _selectedIndex = 0;
-  
-  // Warna Pink Soft untuk menggantikan Grey agar lebih estetik
   final Color softPink = const Color(0xFFD18DA0);
-
-  // FUNGSI LOGOUT DIALOG DENGAN NAVIGASI KE LOGIN SCREEN
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header Label "Keluar aplikasi"
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5D1D1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'Keluar aplikasi',
-                    style: TextStyle(
-                      color: Color(0xFFD81B60),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Teks Peringatan
-                const Text(
-                  'Anda akan keluar dari aplikasi ini, jika mau masuk maka perlu akses login kembali!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Colors.black87),
-                ),
-                const SizedBox(height: 25),
-                // Tombol Logout Merah
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // NAVIGASI BALIK KE LOGIN SCREEN
-                      // Menggunakan pushAndRemoveUntil agar user tidak bisa tekan 'back' kembali ke dashboard
-                      Navigator.pushAndRemoveUntil(
-                        context, 
-                        MaterialPageRoute(builder: (_) => const LoginScreen()), 
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B6B),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text(
-                      'Logout',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +32,6 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
     );
   }
 
-  // HEADER DENGAN TOMBOL PROFIL
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -131,9 +52,14 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
               Text('Dashboard Petugas', style: TextStyle(color: Colors.white70)),
             ],
           ),
-          // Klik icon profil untuk Logout
+          // SEKARANG PINDAH KE HALAMAN LOGOUT SCREEN
           GestureDetector(
-            onTap: () => _showLogoutDialog(context),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LogoutScreen()),
+              );
+            },
             child: const CircleAvatar(
               backgroundColor: Colors.white24, 
               child: Icon(Icons.person, color: Colors.white)
@@ -144,7 +70,6 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
     );
   }
 
-  // ISI UTAMA DASHBOARD
   Widget _buildMainContent() {
     return Expanded(
       child: Padding(
@@ -176,7 +101,6 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
     );
   }
 
-  // NAVIGASI BAWAH
   Widget _buildBottomNavigation(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -203,7 +127,6 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
     );
   }
 
-  // ITEM RIWAYAT
   Widget _riwayatItem(String title, String subtitle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

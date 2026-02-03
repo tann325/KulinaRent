@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/admin/screens/login_page.dart';
-import 'admin/screens/splash_screen.dart';
-import 'services/supabase_service.dart';
-import 'admin/screens/alat1.dart';
+import 'package:kulinarent_2026/services/supabase_service.dart';
+import 'package:kulinarent_2026/admin/screens/login_page.dart';
 
-void main() {
+void main() async {
+  // 1. Inisialisasi binding Flutter
   WidgetsFlutterBinding.ensureInitialized();
-  SupabaseService.init();
+  
+  // 2. Inisialisasi Supabase (PENTING: pakai await)
+  await SupabaseService.init();
+  
   runApp(const KulinaRentApp());
 }
 
@@ -20,12 +23,10 @@ class KulinaRentApp extends StatelessWidget {
       title: 'KulinaRent',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7A1631), // maroon
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7A1631)),
       ),
-      home: const SplashScreen(),
+      // Aplikasi dimulai dari LoginScreen
+      home: const LoginScreen(), 
     );
   }
 }
-

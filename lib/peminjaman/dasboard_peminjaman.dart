@@ -3,6 +3,7 @@ import 'package:kulinarent_2026/admin/screens/login_page.dart';
 import 'package:kulinarent_2026/peminjaman/alat_peminjam.dart';
 import 'package:kulinarent_2026/peminjaman/pengajuan_peminjaman_alat.dart';
 import 'package:kulinarent_2026/peminjaman/pengembalian_peminjaman_alat.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DashboardPeminjam extends StatelessWidget {
   const DashboardPeminjam({super.key});

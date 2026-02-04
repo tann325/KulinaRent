@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/peminjaman/pengajuan_peminjaman_alat.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kulinarent_2026/peminjaman/dasboard_peminjaman.dart';
+import 'package:kulinarent_2026/peminjaman/pengajuan_peminjaman_alat.dart'; 
 import 'package:kulinarent_2026/peminjaman/pengembalian_peminjaman_alat.dart';
-
-class DataKeranjang {
-  static List<Map<String, String>> itemTerpilih = [];
-  // Simulasi data untuk Pengajuan & Pengembalian
-  static List<Map<String, dynamic>> daftarPengajuan = [
-    {
-      'noKr': 'Kr 2331',
-      'nama': 'Rijaaa',
-      'tanggal': '27-Januari-2026',
-      'kelas': 'XII DKV 1',
-      'barang': 'Oven 1, Mangkuk 1',
-      'status': 'Menunggu persetujuan'
-    }
-  ];
-}
 
 class AlatPage extends StatefulWidget {
   const AlatPage({super.key});
@@ -25,13 +13,45 @@ class AlatPage extends StatefulWidget {
 }
 
 class _AlatPageState extends State<AlatPage> {
+  final supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> daftarAlat = [];
+  bool isLoading = true;
+
+  final String projectUrl = "https://URL_PROJECT_KAMU.supabase.co"; 
+  final String bucketName = "alat"; 
+
+  @override
+  void initState() {
+    super.initState();
+    _muatDataAlat();
+  }
+
+  Future<void> _muatDataAlat() async {
+    try {
+      setState(() => isLoading = true);
+      final data = await supabase
+          .from('alat')
+          .select('*')
+          .order('nama_alat', ascending: true);
+      
+      setState(() {
+        daftarAlat = List<Map<String, dynamic>>.from(data);
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Error Load Alat: $e");
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   void tambahKeKeranjang(String namaAlat) {
-    setState(() {
-      DataKeranjang.itemTerpilih.add({'nama': namaAlat, 'jumlah': '1'});
-    });
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$namaAlat ditambah!'), backgroundColor: const Color(0xFFE3A5BB)),
+      SnackBar(
+        content: Text('$namaAlat ditambah ke keranjang!'), 
+        backgroundColor: const Color(0xFFE3A5BB),
+        duration: const Duration(seconds: 1),
+      ),
     );
   }
 
@@ -42,63 +62,124 @@ class _AlatPageState extends State<AlatPage> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context),
+            _buildHeader(),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    _buildSearch(),
-                    const SizedBox(height: 15),
-                    _buildKategoriDropdown(),
-                    const SizedBox(height: 20),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 15,
-                      childAspectRatio: 0.65, 
-                      children: [
-                        _buildAlatCard('Oven', 'Spesifikasi'),
-                        _buildAlatCard('Teflon', 'Spesifikasi'),
-                        _buildAlatCard('Sutel', 'Spesifikasi'),
-                        _buildAlatCard('Gelas', 'Spesifikasi'),
-                        _buildAlatCard('Mangkuk', 'Spesifikasi'),
-                        _buildAlatCard('Sendok/Garpu', 'Spesifikasi'),
-                      ],
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.pink))
+                  : RefreshIndicator(
+                      onRefresh: _muatDataAlat,
+                      color: Colors.pink,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            _buildSearch(),
+                            const SizedBox(height: 15),
+                            _buildKategoriDropdown(),
+                            const SizedBox(height: 20),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 15,
+                                mainAxisSpacing: 15,
+                                childAspectRatio: 0.72, 
+                              ),
+                              itemCount: daftarAlat.length,
+                              itemBuilder: (context, index) => _buildAlatCard(daftarAlat[index]),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: _buildFloatingCart(),
       bottomNavigationBar: _buildBottomNav(context, 1),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildAlatCard(Map<String, dynamic> item) {
+    final String imagePath = item['gambar'] ?? '';
+
+    return GestureDetector(
+      onTap: () => tambahKeKeranjang(item['nama_alat'] ?? 'Alat'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white, 
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2C6CC),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: _buildImageLogic(imagePath),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                item['nama_alat'] ?? '-', 
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFE91E63), fontSize: 14),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              child: Text("Stok: ${item['stok'] ?? 0}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(right: 12, bottom: 8), 
+              child: Align(alignment: Alignment.bottomRight, child: Icon(Icons.add_circle, color: Color(0xFFE3A5BB), size: 30))
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageLogic(String path) {
+    if (path.isEmpty) return const Center(child: Icon(Icons.image_not_supported, color: Colors.white, size: 30));
+    if (path.startsWith('http')) {
+      return Image.network(path, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white));
+    }
+    return Image.asset(
+      'assets/images/$path',
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        String fallbackUrl = "$projectUrl/storage/v1/object/public/$bucketName/$path";
+        return Image.network(fallbackUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white));
+      },
+    );
+  }
+
+  // HEADER SUDAH DIHAPUS ICON BACK-NYA
+  Widget _buildHeader() {
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       decoration: BoxDecoration(color: const Color(0xFFE3A5BB), borderRadius: BorderRadius.circular(30)),
-      child: Row(
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text('KulinaRent', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-              Text('Alat', style: TextStyle(fontSize: 16, color: Colors.white70)),
-            ],
-          ),
+          Text('KulinaRent', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text('Daftar Alat', style: TextStyle(fontSize: 14, color: Colors.white70)),
         ],
       ),
     );
@@ -106,11 +187,12 @@ class _AlatPageState extends State<AlatPage> {
 
   Widget _buildSearch() {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
       child: const TextField(
         decoration: InputDecoration(
-          hintText: 'Cari Alat',
+          hintText: 'Cari Alat...',
           border: InputBorder.none,
+          prefixIcon: Icon(Icons.search, color: Colors.grey),
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
       ),
@@ -120,60 +202,44 @@ class _AlatPageState extends State<AlatPage> {
   Widget _buildKategoriDropdown() {
     return Align(
       alignment: Alignment.centerRight,
-      child: PopupMenuButton<String>(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(color: const Color(0xFFE3A5BB), borderRadius: BorderRadius.circular(12)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.keyboard_arrow_down, color: Colors.white),
-              SizedBox(width: 5),
-              Text('Kategori', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-        itemBuilder: (context) => [],
-      ),
-    );
-  }
-
-  Widget _buildAlatCard(String nama, String spek) {
-    return GestureDetector(
-      onTap: () => tambahKeKeranjang(nama),
       child: Container(
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(color: const Color(0xFFE3A5BB), borderRadius: BorderRadius.circular(12)),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(child: Container(margin: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFFF2C6CC), borderRadius: BorderRadius.circular(15)))),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(nama, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFE91E63)))),
-            const Spacer(),
-            const Padding(padding: EdgeInsets.all(10), child: Align(alignment: Alignment.bottomRight, child: Icon(Icons.add_circle_outline, color: Color(0xFFE3A5BB)))),
+            Icon(Icons.filter_list, color: Colors.white, size: 18),
+            SizedBox(width: 5),
+            Text('Kategori', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFloatingCart() {
-    return FloatingActionButton(
-      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const KeranjangPage())),
-      backgroundColor: const Color(0xFFE3A5BB),
-      child: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
-    );
-  }
-
+  // BOTTOM NAV SUDAH BISA PINDAH LANGSUNG
   Widget _buildBottomNav(BuildContext context, int index) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.black,
+      selectedItemColor: Colors.pink,
       unselectedItemColor: Colors.grey,
       currentIndex: index,
       onTap: (i) {
-        if (i == 0) Navigator.popUntil(context, (route) => route.isFirst);
-        if (i == 2) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const PengajuanPage()));
-        if (i == 3) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const PengembalianPage()));
+        if (i == index) return; // Kalau klik menu yang sama, abaikan
+        
+        Widget page;
+        switch (i) {
+          case 0: page = const DashboardPeminjam(); break;
+          case 1: page = const AlatPage(); break;
+          case 2: page = const PengajuanPage(); break;
+          case 3: page = const PengembalianPage(); break;
+          default: page = const DashboardPeminjam();
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
@@ -183,11 +249,4 @@ class _AlatPageState extends State<AlatPage> {
       ],
     );
   }
-}
-
-// KeranjangPage tetap sama seperti kode sebelumnya milikmu
-class KeranjangPage extends StatelessWidget {
-  const KeranjangPage({super.key});
-  @override
-  Widget build(BuildContext context) { return Scaffold(body: Center(child: Text("Halaman Keranjang"))); }
 }

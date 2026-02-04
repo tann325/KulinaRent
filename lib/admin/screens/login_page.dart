@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// Import folder sesuai struktur projectmu
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kulinarent_2026/admin/screens/dashboard.dart';
 import 'package:kulinarent_2026/peminjaman/dasboard_peminjaman.dart';
 import 'package:kulinarent_2026/petugas/screen/petugas_dashboard.dart';

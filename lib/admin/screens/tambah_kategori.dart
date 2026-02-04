@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Menggunakan StatefulWidget agar data list bisa diupdate secara realtime
 class KategoriScreen extends StatefulWidget {

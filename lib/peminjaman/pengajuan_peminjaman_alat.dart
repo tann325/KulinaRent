@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/peminjaman/alat_peminjam.dart';
 import 'package:kulinarent_2026/peminjaman/dasboard_peminjaman.dart';
 import 'package:kulinarent_2026/peminjaman/pengembalian_peminjaman_alat.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PengajuanPage extends StatelessWidget {
   const PengajuanPage({super.key});
@@ -28,12 +29,12 @@ class PengajuanPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final data = DataKeranjang.daftarPengajuan[index];
                         return _buildCardPengajuan(
-                          noKr: data['noKr'],
-                          nama: data['nama'],
-                          tanggal: data['tanggal'],
-                          kelas: data['kelas'],
-                          daftarBarang: data['barang'],
-                          status: data['status'],
+                          noKr: data['noKr'] ?? '-',
+                          nama: data['nama'] ?? '-',
+                          tanggal: data['tanggal'] ?? '-',
+                          kelas: data['kelas'] ?? '-',
+                          daftarBarang: data['barang'] ?? '-',
+                          status: data['status'] ?? 'Pending',
                         );
                       },
                     ),
@@ -79,7 +80,14 @@ class PengajuanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCardPengajuan({required String noKr, required String nama, required String tanggal, required String kelas, required String daftarBarang, required String status}) {
+  Widget _buildCardPengajuan({
+    required String noKr, 
+    required String nama, 
+    required String tanggal, 
+    required String kelas, 
+    required String daftarBarang, 
+    required String status
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(20),
@@ -107,7 +115,9 @@ class PengajuanPage extends StatelessWidget {
             width: double.infinity, 
             padding: const EdgeInsets.symmetric(vertical: 10), 
             decoration: BoxDecoration(color: const Color(0xFF7B1530), borderRadius: BorderRadius.circular(20)), 
-            child: Center(child: Text(status, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+            child: Center(
+              child: Text(status, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+            ),
           ),
         ],
       ),
@@ -119,7 +129,7 @@ class PengajuanPage extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
-      currentIndex: 2, // Index 2 adalah Pengajuan
+      currentIndex: 2, 
       onTap: (index) {
         if (index == 0) {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPeminjam()));
@@ -137,4 +147,9 @@ class PengajuanPage extends StatelessWidget {
       ],
     );
   }
+}
+
+// INI BAGIAN YANG DIPERBAIKI: Tidak lagi null, tapi List kosong []
+class DataKeranjang {
+  static List<Map<String, dynamic>> daftarPengajuan = [];
 }

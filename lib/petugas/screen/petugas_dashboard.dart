@@ -3,9 +3,7 @@ import 'package:kulinarent_2026/admin/screens/login_page.dart';
 import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
 import 'pengajuan_peminjaman_screen.dart';
 import 'penggembalian_screen.dart';
-import 'laporan_screen.dart';
-// Ganti 'login_screen.dart' dengan nama file login kamu yang sebenarnya
-import 'login_screen.dart'; 
+import 'laporan_petugas_screen.dart';
 
 class DashboardPetugas extends StatefulWidget {
   const DashboardPetugas({super.key});

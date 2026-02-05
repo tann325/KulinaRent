@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
+import 'package:kulinarent_2026/petugas/screen/laporan_petugas_screen.dart';
 import 'petugas_dashboard.dart';
 import 'pengajuan_peminjaman_screen.dart';
-import 'laporan_screen.dart';
+import 'laporan_petugas_screen.dart';
 
 class PengembalianScreen extends StatelessWidget {
   const PengembalianScreen({super.key});
@@ -180,7 +181,8 @@ class PengembalianScreen extends StatelessWidget {
       unselectedItemColor: const Color(0xFFD18DA0), 
       onTap: (index) {
         if (index == 0) {
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const DashboardPetugas()), (route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const DashboardPetugas ()), 
+          (route) => false);
         } else if (index == 1) {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PengajuanPeminjamanScreen()));
         } else if (index == 3) {
@@ -195,4 +197,8 @@ class PengembalianScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+class DashboardPetugas {
+  const DashboardPetugas();
 }

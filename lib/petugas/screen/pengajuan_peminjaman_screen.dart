@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
+import 'package:kulinarent_2026/petugas/screen/laporan_petugas_screen.dart';
 import 'petugas_dashboard.dart';
-import 'penggembalian_screen.dart';
-import 'laporan_screen.dart';
+import 'penggembalian_screen.dart' hide DashboardPetugas;
+import 'laporan_petugas_screen.dart';
 
 class PengajuanPeminjamanScreen extends StatelessWidget {
   const PengajuanPeminjamanScreen({super.key});
@@ -12,7 +13,6 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
     const Color headerPink = Color(0xFFE4A5B8);
     const Color bodyPink = Color(0xFFF5D1D1);
     const Color primaryMaroon = Color(0xFF7B1530);
-    // Warna pink soft pengganti grey
     const Color softPinkText = Color(0xFFD18DA0);
 
     return Scaffold(
@@ -20,6 +20,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // HEADER
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -44,6 +45,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+            // SEARCH BAR
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -54,7 +56,6 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
                 child: const TextField(
                   decoration: InputDecoration(
                     hintText: 'Cari',
-                    // Hint cari pakai pink soft
                     hintStyle: TextStyle(color: softPinkText),
                     border: InputBorder.none,
                     icon: Icon(Icons.search, color: Colors.pink, size: 20),
@@ -63,6 +64,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
+            // LIST PENGAJUAN
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -71,7 +73,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
                     kode: '2331',
                     nama: 'Rijaa',
                     kelas: 'X DKV 1',
-                    barang: 'Oven 1, Mangkuk 1',
+                    barang: 'Oven 1x, Mangkuk 1x',
                     tanggal: '27-Januari-2026',
                     softColor: softPinkText,
                   ),
@@ -79,7 +81,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
                     kode: '2330',
                     nama: 'Richo',
                     kelas: 'XII RPL 1',
-                    barang: 'sendok garpu 1, wajan 1',
+                    barang: 'Sendok Garpu 1x, Wajan 1x',
                     tanggal: '25-Januari-2026',
                     softColor: softPinkText,
                   ),
@@ -93,7 +95,6 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: primaryMaroon,
-        // Navigasi yang tidak terpilih pakai pink soft
         unselectedItemColor: softPinkText,
         onTap: (index) {
           if (index == 0) {
@@ -101,22 +102,18 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (_) => const DashboardPetugas()),
                 (route) => false);
-          }
-          if (index == 2) {
+          } else if (index == 2) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const PengembalianScreen()));
-          }
-          if (index == 3) {
+          } else if (index == 3) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const LaporanScreen()));
           }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.assignment), label: 'Peminjaman'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.swap_horiz), label: 'Pengembalian'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Peminjaman'),
+          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Pengembalian'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Laporan'),
         ],
       ),
@@ -126,7 +123,7 @@ class PengajuanPeminjamanScreen extends StatelessWidget {
 
 class PengajuanCard extends StatefulWidget {
   final String kode, nama, kelas, barang, tanggal;
-  final Color softColor; // Tambah parameter warna
+  final Color softColor;
   const PengajuanCard(
       {super.key,
       required this.kode,
@@ -142,6 +139,136 @@ class PengajuanCard extends StatefulWidget {
 
 class _PengajuanCardState extends State<PengajuanCard> {
   String currentStatus = 'pending';
+
+  // FUNGSI UNTUK MENAMPILKAN STRUK (MODAL BOTTOM SHEET)
+  void _showStruk(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.88,
+          decoration: const BoxDecoration(
+            color: Color(0xFFF5D1D1),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Header Modal
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE4A5B8),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('KulinaRent', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                        Text('Detail Aktifitas', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              // AREA STRUK PUTIH
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Container(
+                  padding: const EdgeInsets.all(25),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+                  ),
+                  child: Column(
+                    children: [
+                      const Text('KulinaRent', style: TextStyle(color: Color(0xFFD81B60), fontWeight: FontWeight.bold, fontSize: 20)),
+                      const Text('JURUSAN TATA BOGA', style: TextStyle(color: Color(0xFFD18DA0), fontSize: 12, fontWeight: FontWeight.bold)),
+                      const Text('SMK BRANTAS KARANGKATES', style: TextStyle(color: Color(0xFFD18DA0), fontSize: 12)),
+                      const SizedBox(height: 25),
+                      _rowStruk('Kode Peminjaman', widget.kode),
+                      _rowStruk('Peminjaman', widget.nama),
+                      _rowStruk('Tanggal Peminjaman', widget.tanggal),
+                      _rowStruk('Tanggal Pengembalian', '29-Januari-2026'),
+                      _rowStruk('Petugas', 'Intan'),
+                      const SizedBox(height: 20),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('Daftar Alat', style: TextStyle(color: Color(0xFFD81B60), fontWeight: FontWeight.bold)),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(widget.barang.replaceAll(', ', '\n'), 
+                          style: const TextStyle(color: Color(0xFFD18DA0), fontSize: 13, height: 1.5)),
+                      ),
+                      const Divider(height: 40, thickness: 1),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total', style: TextStyle(color: Color(0xFFD81B60), fontWeight: FontWeight.bold)),
+                          Text('${widget.barang.split(',').length} Alat', 
+                            style: const TextStyle(color: Color(0xFFD81B60), fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              // TOMBOL CETAK
+              Padding(
+                padding: const EdgeInsets.all(30),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF7B1530),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    child: const Text('Cetak Struk', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _rowStruk(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Color(0xFFD18DA0), fontSize: 12)),
+          Text(value, style: const TextStyle(color: Color(0xFFD18DA0), fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -155,7 +282,6 @@ class _PengajuanCardState extends State<PengajuanCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Kode & Tanggal ganti pink soft
               Text('Kr ${widget.kode}',
                   style: TextStyle(fontSize: 11, color: widget.softColor)),
               Text(widget.tanggal,
@@ -181,18 +307,23 @@ class _PengajuanCardState extends State<PengajuanCard> {
 
   Widget _buildActionButtons() {
     if (currentStatus == 'setuju') {
-      return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-              color: const Color(0xFF7B1530),
-              borderRadius: BorderRadius.circular(20)),
-          child: const Text('Peminjaman Disetujui',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold)));
+      return Column(
+        children: [
+          Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                  color: const Color(0xFF7B1530),
+                  borderRadius: BorderRadius.circular(20)),
+              child: const Text('Peminjaman Disetujui',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
+          TextButton(
+            onPressed: () => _showStruk(context),
+            child: const Text('Lihat Struk', style: TextStyle(color: Color(0xFFD81B60), fontSize: 12)),
+          )
+        ],
+      );
     } else if (currentStatus == 'tolak') {
       return Container(
           width: double.infinity,
@@ -202,23 +333,16 @@ class _PengajuanCardState extends State<PengajuanCard> {
               borderRadius: BorderRadius.circular(20)),
           child: const Text('Peminjaman Ditolak',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Color(0xFFD81B60),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold)));
+              style: TextStyle(color: Color(0xFFD81B60), fontSize: 12, fontWeight: FontWeight.bold)));
     } else {
       return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-        _btnAction(
-            'Tolak',
-            const Color(0xFFF6D3DB),
-            const Color(0xFFD81B60),
+        _btnAction('Tolak', const Color(0xFFF6D3DB), const Color(0xFFD81B60),
             () => setState(() => currentStatus = 'tolak')),
         const SizedBox(width: 8),
-        _btnAction(
-            'Setuju',
-            const Color(0xFF7B1530),
-            Colors.white,
-            () => setState(() => currentStatus = 'setuju')),
+        _btnAction('Setuju', const Color(0xFF7B1530), Colors.white, () {
+          setState(() => currentStatus = 'setuju');
+          _showStruk(context); // Langsung muncul struk
+        }),
       ]);
     }
   }
@@ -228,10 +352,7 @@ class _PengajuanCardState extends State<PengajuanCard> {
         onTap: press,
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-            decoration:
-                BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-            child: Text(label,
-                style: TextStyle(
-                    color: text, fontWeight: FontWeight.bold, fontSize: 12))));
+            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+            child: Text(label, style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 12))));
   }
 }

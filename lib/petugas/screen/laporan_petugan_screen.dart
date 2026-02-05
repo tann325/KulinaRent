@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'petugas_dashboard.dart';
 import 'pengajuan_peminjaman_screen.dart';
-import 'penggembalian_screen.dart';
+import 'penggembalian_screen.dart' hide DashboardPetugas;
 
 class LaporanScreen extends StatelessWidget {
   const LaporanScreen({super.key});

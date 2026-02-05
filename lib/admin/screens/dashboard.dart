@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kulinarent_2026/admin/screens/aktivitas1.dart';
 import 'package:kulinarent_2026/admin/screens/alat1.dart';
 import 'package:kulinarent_2026/admin/screens/logout_screen.dart';
 import 'package:kulinarent_2026/admin/screens/pengguna_screen.dart';
 import 'package:kulinarent_2026/admin/screens/riwayat_screen.dart';
 import 'package:kulinarent_2026/admin/screens/logout_screen.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

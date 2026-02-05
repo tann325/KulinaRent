@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kulinarent_2026/admin/screens/riwayat_screen.dart';
-import 'alat1.dart';
-import 'aktivitas1.dart'; // Jika file ini masih digunakan, pastikan path benar
-import 'dashboard.dart';
-
-// DATA GLOBAL UNTUK SIMULASI DATABASE
-List<Map<String, String>> globalListPengguna = [
-  {'nama': 'Salsadilla Ariza', 'email': 'salsadilla@gmail.com'},
-  {'nama': 'Richo Ferdinan', 'email': 'richacho@gmail.com'},
-];
+import 'package:kulinarent_2026/admin/screens/alat1.dart';
+import 'package:kulinarent_2026/admin/screens/aktivitas1.dart'; 
+import 'package:kulinarent_2026/admin/screens/dashboard.dart';
 
 class PenggunaScreen extends StatefulWidget {
   const PenggunaScreen({super.key});
@@ -18,35 +13,25 @@ class PenggunaScreen extends StatefulWidget {
 }
 
 class _PenggunaScreenState extends State<PenggunaScreen> {
-  List<Map<String, String>> displayedPengguna = [];
-  final TextEditingController _searchController = TextEditingController();
+  final SupabaseClient supabase = Supabase.instance.client;
+  String searchQuery = "";
 
-  @override
-  void initState() {
-    super.initState();
-    displayedPengguna = List.from(globalListPengguna);
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        displayedPengguna = List.from(globalListPengguna);
-      } else {
-        displayedPengguna = globalListPengguna
-            .where((user) =>
-                user['nama']!.toLowerCase().contains(query.toLowerCase()) ||
-                user['email']!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+  // --- DELETE PENGGUNA ---
+  Future<void> _hapusPengguna(String id) async {
+    try {
+      await supabase.from('users').delete().eq('id_user', id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Pengguna berhasil dihapus"), backgroundColor: Colors.green),
+        );
       }
-    });
-  }
-
-  void _hapusPengguna(int index) {
-    setState(() {
-      Map<String, String> userTerhapus = displayedPengguna[index];
-      globalListPengguna.remove(userTerhapus);
-      displayedPengguna.removeAt(index);
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal menghapus! Periksa koneksi/RLS"), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   @override
@@ -58,42 +43,50 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
           children: [
             _buildHeader("KulinaRent", "Pengguna"),
             const SizedBox(height: 20),
-            _buildSearchBar("Cari Pengguna"),
+            _buildSearchBar("Cari Nama atau Username"),
             const SizedBox(height: 20),
+            
+            // --- READ REALTIME ---
             Expanded(
-              child: displayedPengguna.isEmpty
-                  ? const Center(
-                      child: Text("Pengguna tidak ditemukan", 
-                      style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold)))
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      itemCount: displayedPengguna.length,
-                      itemBuilder: (context, index) {
-                        return _buildUserCard(
-                          index,
-                          displayedPengguna[index]['nama']!,
-                          displayedPengguna[index]['email']!,
-                        );
-                      },
-                    ),
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: supabase.from('users').stream(primaryKey: ['id_user']),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("Data Pengguna Kosong"));
+                  }
+
+                  var data = snapshot.data!;
+                  if (searchQuery.isNotEmpty) {
+                    data = data.where((u) => 
+                      u['nama'].toString().toLowerCase().contains(searchQuery.toLowerCase()) ||
+                      u['username'].toString().toLowerCase().contains(searchQuery.toLowerCase())
+                    ).toList();
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final user = data[index];
+                      return _buildUserCard(
+                        user['id_user'].toString(),
+                        user['nama'] ?? 'Tanpa Nama',
+                        user['username'] ?? '-',
+                        user['role'] ?? 'peminjam'
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const TambahPenggunaScreen()),
-          );
-
-          if (result != null && result is Map<String, String>) {
-            setState(() {
-              globalListPengguna.add(result);
-              _onSearchChanged(_searchController.text); 
-            });
-          }
-        },
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TambahPenggunaScreen())),
         backgroundColor: Colors.white,
         elevation: 2,
         child: const Icon(Icons.person_add_alt_1, color: Colors.pink, size: 30),
@@ -102,41 +95,16 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
-  Widget _buildHeader(String title, String subtitle) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 30),
-      decoration: const BoxDecoration(
-        color: Color(0xFFE7A9BD),
-        borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 16)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSearchBar(String hint) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
         child: TextField(
-          controller: _searchController,
-          onChanged: _onSearchChanged,
+          onChanged: (val) => setState(() => searchQuery = val),
           style: const TextStyle(color: Color(0xFF7B1530), fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFFE7A9BD)),
             prefixIcon: const Icon(Icons.search, color: Color(0xFFE7A9BD)),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -146,14 +114,11 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
-  Widget _buildUserCard(int index, String name, String email) {
+  Widget _buildUserCard(String id, String name, String username, String role) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -161,31 +126,46 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(name, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.pink, fontSize: 16)),
-              Text(email, style: const TextStyle(color: Colors.pinkAccent, fontSize: 13)),
+              Text("@$username | $role", style: const TextStyle(color: Colors.pinkAccent, fontSize: 13)),
             ],
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.grey, size: 20),
-            onPressed: () => _hapusPengguna(index),
+            onPressed: () => _hapusPengguna(id),
           ),
         ],
       ),
     );
   }
 
-  // --- PERBAIKAN BOTTOM NAV DISINI ---
+  Widget _buildHeader(String title, String subtitle) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(25, 20, 25, 30),
+      decoration: const BoxDecoration(
+        color: Color(0xFFE7A9BD),
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: Colors.white)),
+          Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: 1, // Pengguna di Index 1
+      currentIndex: 1,
       selectedItemColor: Colors.pink,
       unselectedItemColor: Colors.grey,
-      backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
         if (index == 1) return;
         switch (index) {
           case 0: Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AlatScreen())); break;
-          case 1: /* Sudah di Pengguna */ break;
           case 2: Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen())); break;
           case 3: Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RiwayatScreen())); break;
           case 4: Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AktifitasScreen())); break;
@@ -193,7 +173,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.soup_kitchen_outlined), label: 'Alat'),
-        BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Pengguna'), // Terpilih (People tebal)
+        BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Pengguna'),
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
         BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Aktifitas'),
@@ -202,60 +182,95 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   }
 }
 
-// --- SCREEN TAMBAH PENGGUNA (TETAP SAMA) ---
+// --- SCREEN TAMBAH PENGGUNA ---
 class TambahPenggunaScreen extends StatefulWidget {
   const TambahPenggunaScreen({super.key});
-  @override State<TambahPenggunaScreen> createState() => _TambahPenggunaScreenState();
+  @override
+  State<TambahPenggunaScreen> createState() => _TambahPenggunaScreenState();
 }
 
 class _TambahPenggunaScreenState extends State<TambahPenggunaScreen> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> _simpanKeSupabase() async {
+    // Validasi sederhana
+    if (nameController.text.isEmpty || emailController.text.isEmpty || usernameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Lengkapi semua data!")));
+      return;
+    }
+    
+    setState(() => isLoading = true);
+    try {
+      final supabase = Supabase.instance.client;
+      
+      // 1. Buat Akun di Supabase Auth
+      final res = await supabase.auth.signUp(
+        email: emailController.text.trim(),
+        password: 'Password123!', 
+      );
+
+      if (res.user != null) {
+        // 2. Simpan data ke tabel public.users
+        await supabase.from('users').insert({
+          'id_user': res.user!.id,
+          'nama': nameController.text.trim(),
+          'username': usernameController.text.trim(),
+          'role': 'peminjam',
+          'status': true,
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil menambah pengguna!")));
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal: $e"), backgroundColor: Colors.red));
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1D3D6),
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeaderTambah(),
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Nama Pengguna:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildInputField(nameController, "Masukkan Nama"),
-                  const SizedBox(height: 20),
-                  const Text("Email Pengguna:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildInputField(emailController, "Masukkan Email"),
-                  const SizedBox(height: 40),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (nameController.text.isNotEmpty && emailController.text.isNotEmpty) {
-                          Navigator.pop(context, {
-                            'nama': nameController.text,
-                            'email': emailController.text,
-                          });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7B1530),
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: const Text("Konfirmasi", style: TextStyle(color: Colors.white, fontSize: 16)),
-                    ),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeaderTambah(),
+              Padding(
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                  children: [
+                    _buildInputField(nameController, "Nama Lengkap"),
+                    const SizedBox(height: 15),
+                    _buildInputField(usernameController, "Username"),
+                    const SizedBox(height: 15),
+                    _buildInputField(emailController, "Email"),
+                    const SizedBox(height: 30),
+                    isLoading 
+                      ? const CircularProgressIndicator(color: Color(0xFF7B1530))
+                      : ElevatedButton(
+                          onPressed: _simpanKeSupabase,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF7B1530),
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                          ),
+                          child: const Text("Konfirmasi", style: TextStyle(color: Colors.white, fontSize: 16)),
+                        ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -264,24 +279,18 @@ class _TambahPenggunaScreenState extends State<TambahPenggunaScreen> {
   Widget _buildHeaderTambah() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+      padding: const EdgeInsets.symmetric(vertical: 25),
       decoration: const BoxDecoration(
-        color: Color(0xFFE7A9BD),
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
+        color: Color(0xFFE7A9BD), 
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40))
       ),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white), 
+            onPressed: () => Navigator.pop(context)
           ),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("KulinaRent", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white)),
-              Text("Tambah Pengguna", style: TextStyle(color: Colors.white70, fontSize: 16)),
-            ],
-          ),
+          const Text("Tambah Pengguna", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -295,12 +304,10 @@ class _TambahPenggunaScreenState extends State<TambahPenggunaScreen> {
       ),
       child: TextField(
         controller: controller,
-        style: const TextStyle(color: Color(0xFF7B1530), fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.pink.withOpacity(0.3)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         ),
       ),
     );

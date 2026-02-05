@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kulinarent_2026/petugas/screen/laporan_petugan_screen.dart';
-import 'package:kulinarent_2026/petugas/screen/laporan_petugas_screen.dart';
-import 'petugas_dashboard.dart';
+// Pastikan path ini sesuai dengan struktur folder aslimu
+import 'petugas_dashboard.dart'; 
 import 'pengajuan_peminjaman_screen.dart';
 import 'laporan_petugas_screen.dart';
 
@@ -12,8 +12,7 @@ class PengembalianScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color headerPink = Color(0xFFE4A5B8);
     const Color bodyPink = Color(0xFFF5D1D1);
-    // Warna pink soft untuk menggantikan grey
-    const Color softPinkText = Color(0xFFD18DA0); 
+    const Color softPinkText = Color(0xFFD18DA0);
 
     return Scaffold(
       backgroundColor: bodyPink,
@@ -36,7 +35,10 @@ class PengembalianScreen extends StatelessWidget {
                 children: [
                   Text(
                     "KulinaRent",
-                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "Pengembalian",
@@ -59,7 +61,6 @@ class PengembalianScreen extends StatelessWidget {
                 child: const TextField(
                   decoration: InputDecoration(
                     hintText: 'Cari',
-                    // Hint text sekarang warna pink soft
                     hintStyle: TextStyle(color: softPinkText),
                     border: InputBorder.none,
                     icon: Icon(Icons.search, color: Colors.pink, size: 20),
@@ -128,7 +129,6 @@ class PengembalianScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Warna ID dan Tanggal ganti ke pink soft
               Text(id, style: TextStyle(color: softColor, fontSize: 11)),
               Text(date, style: TextStyle(color: softColor, fontSize: 11)),
             ],
@@ -144,17 +144,20 @@ class PengembalianScreen extends StatelessWidget {
           Text(items,
               style: const TextStyle(fontSize: 12, color: Colors.pinkAccent)),
           const SizedBox(height: 8),
-          // Warna teks pengembalian ganti ke pink soft
           Text("Pengembalian : $returnDate",
               style: TextStyle(color: softColor, fontSize: 11)),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Tambahkan logika konfirmasi di sini
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLate ? const Color(0xFFFAD9E2) : const Color(0xFF7B1530),
-                foregroundColor: isLate ? const Color(0xFFD81B60) : Colors.white,
+                backgroundColor:
+                    isLate ? const Color(0xFFFAD9E2) : const Color(0xFF7B1530),
+                foregroundColor:
+                    isLate ? const Color(0xFFD81B60) : Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
@@ -164,7 +167,8 @@ class PengembalianScreen extends StatelessWidget {
                   isLate
                       ? "Konfirmasi Pengembalian Terlambat"
                       : "Konfirmasi Pengembalian",
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -177,16 +181,23 @@ class PengembalianScreen extends StatelessWidget {
       currentIndex: 2,
       type: BottomNavigationBarType.fixed,
       selectedItemColor: const Color(0xFF7B1530),
-      // Icon yang tidak terpilih sekarang warna pink soft, bukan grey
-      unselectedItemColor: const Color(0xFFD18DA0), 
+      unselectedItemColor: const Color(0xFFD18DA0),
       onTap: (index) {
         if (index == 0) {
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const DashboardPetugas ()), 
-          (route) => false);
+          // Menggunakan DashboardPetugas yang benar sebagai Widget
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardPetugas()),
+              (route) => false);
         } else if (index == 1) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PengajuanPeminjamanScreen()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const PengajuanPeminjamanScreen()));
         } else if (index == 3) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LaporanScreen()));
+          // Pastikan nama class di file laporan_petugas_screen.dart adalah LaporanScreen
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const LaporanScreen()));
         }
       },
       items: const [
@@ -199,6 +210,14 @@ class PengembalianScreen extends StatelessWidget {
   }
 }
 
-class DashboardPetugas {
-  const DashboardPetugas();
+// Perbaikan: DashboardPetugas harus berupa Widget agar bisa dipanggil Navigator
+class DashboardPetugas extends StatelessWidget {
+  const DashboardPetugas({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: Text("Dashboard Petugas")),
+    );
+  }
 }
